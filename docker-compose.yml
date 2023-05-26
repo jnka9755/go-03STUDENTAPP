@@ -1,0 +1,15 @@
+version: "3.5"
+services:
+  go-student-app:
+    platform: linux/amd64
+    container_name: go-student-app
+    build:
+      context: ./.docker
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: go_student_app
+    ports:
+      - "3320:3306"
+    volumes:
+      - ./.dockers/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
