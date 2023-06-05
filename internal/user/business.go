@@ -3,16 +3,27 @@ package user
 import "log"
 
 type Business interface {
-	Create(firstName, lastName, email, phone string) error
+	Create(user *User) (*User, error)
 }
 
-type business struct{}
-
-func NewBusiness() Business {
-	return &business{}
+type business struct {
+	log        *log.Logger
+	repository Repository
 }
 
-func (b business) Create(firstName, lastName, email, phone string) error {
-	log.Println("Create user business")
-	return nil
+func NewBusiness(log *log.Logger, repository Repository) Business {
+	return &business{
+		log:        log,
+		repository: repository,
+	}
+}
+
+func (b business) Create(user *User) (*User, error) {
+
+	b.log.Println("Create user Bussiness")
+	if err := b.repository.Create(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

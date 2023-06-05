@@ -62,7 +62,14 @@ func makeCreateEndpoint(b Business) Controller {
 			return
 		}
 
-		err := b.Create(request.FirstName, request.LastName, request.Email, request.Phone)
+		user := User{
+			FirstName: request.FirstName,
+			LastName:  request.LastName,
+			Email:     request.Email,
+			Phone:     request.Phone,
+		}
+
+		responseUser, err := b.Create(&user)
 
 		if err != nil {
 			w.WriteHeader(400)
@@ -70,7 +77,7 @@ func makeCreateEndpoint(b Business) Controller {
 			return
 		}
 
-		json.NewEncoder(w).Encode(request)
+		json.NewEncoder(w).Encode(responseUser)
 	}
 }
 
