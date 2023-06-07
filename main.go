@@ -39,10 +39,10 @@ func main() {
 	userController := user.MakeEndpoints(userBusiness)
 
 	router.HandleFunc("/users", userController.Create).Methods("POST")
-	router.HandleFunc("/users", userController.Get).Methods("GET")
+	router.HandleFunc("/users/{id}", userController.Get).Methods("GET")
 	router.HandleFunc("/users", userController.GetAll).Methods("GET")
-	router.HandleFunc("/users", userController.Update).Methods("PATCH")
-	router.HandleFunc("/users", userController.Delete).Methods("DELETE")
+	router.HandleFunc("/users/{id}", userController.Update).Methods("PATCH")
+	router.HandleFunc("/users/{id}", userController.Delete).Methods("DELETE")
 
 	server := http.Server{
 		Handler:      http.TimeoutHandler(router, time.Second*5, "Timeout!"),
