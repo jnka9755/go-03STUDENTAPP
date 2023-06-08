@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jnka9755/go-03STUDENTAPP/internal/user"
+	"github.com/jnka9755/go-03STUDENTAPP/package/boostrap"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -20,19 +16,13 @@ func main() {
 
 	_ = godotenv.Load()
 
-	log := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
+	log := boostrap.InitLooger()
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DATABASE_USER"),
-		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_NAME"))
+	db, err := boostrap.DBConnection()
 
-	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	db = db.Debug()
-
-	_ = db.AutoMigrate(&user.User{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	userRepository := user.NewRepository(log, db)
 	userBusiness := user.NewBusiness(log, userRepository)
@@ -51,9 +41,9 @@ func main() {
 		WriteTimeout: 5 * time.Second,
 	}
 
-	err := server.ListenAndServe()
+	error := server.ListenAndServe()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(error)
 	}
 }
