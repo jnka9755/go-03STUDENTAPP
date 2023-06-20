@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jnka9755/go-03STUDENTAPP/package/meta"
 )
 
 type (
@@ -35,6 +36,7 @@ type (
 		Status int         `json:"status"`
 		Data   interface{} `json:"data,omitempty"`
 		Err    string      `json:"error,omitempty"`
+		Meta   *meta.Meta  `json: "meta,omitempty"`
 	}
 )
 
@@ -111,7 +113,31 @@ func makeGetEndpoint(b Business) Controller {
 
 func makeGetAllEndpoint(b Business) Controller {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users, err := b.GetAll()
+
+		value := r.URL.Query()
+
+		filters := Filters{
+			FirstName: value.Get("first_name"),
+			LastName:  value.Get("last_name"),
+		}
+
+		count, err := b.Count(filters)
+
+		if err != nil {
+			w.WriteHeader(500)
+			json.NewEncoder(w).Encode(&Response{Status: 500, Err: err.Error()})
+			return
+		}
+
+		meta, err := meta.New(count)
+
+		if err != nil {
+			w.WriteHeader(500)
+			json.NewEncoder(w).Encode(&Response{Status: 500, Err: err.Error()})
+			return
+		}
+
+		users, err := b.GetAll(filters)
 
 		if err != nil {
 			w.WriteHeader(400)
@@ -119,7 +145,7 @@ func makeGetAllEndpoint(b Business) Controller {
 			return
 		}
 
-		json.NewEncoder(w).Encode(&Response{Status: 200, Data: users})
+		json.NewEncoder(w).Encode(&Response{Status: 200, Data: users, Meta: meta})
 	}
 }
 

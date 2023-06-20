@@ -5,18 +5,26 @@ import (
 	"log"
 )
 
-type Business interface {
-	Create(user *User) (*User, error)
-	GetAll() ([]User, error)
-	Get(id string) (*User, error)
-	Delete(id string) error
-	Update(id string, firstName, lastName, email, phone *string) error
-}
+type (
+	Filters struct {
+		FirstName string
+		LastName  string
+	}
 
-type business struct {
-	log        *log.Logger
-	repository Repository
-}
+	Business interface {
+		Create(user *User) (*User, error)
+		GetAll(filters Filters) ([]User, error)
+		Get(id string) (*User, error)
+		Delete(id string) error
+		Update(id string, firstName, lastName, email, phone *string) error
+		Count(filters Filters) (int, error)
+	}
+
+	business struct {
+		log        *log.Logger
+		repository Repository
+	}
+)
 
 func NewBusiness(log *log.Logger, repository Repository) Business {
 	return &business{
@@ -35,10 +43,10 @@ func (b business) Create(user *User) (*User, error) {
 	return user, nil
 }
 
-func (b business) GetAll() ([]User, error) {
+func (b business) GetAll(filters Filters) ([]User, error) {
 
 	b.log.Println("GetAll user Bussiness")
-	users, err := b.repository.GetAll()
+	users, err := b.repository.GetAll(filters)
 
 	if err != nil {
 		return nil, err
@@ -73,4 +81,8 @@ func (b business) Update(id string, firstName, lastName, email, phone *string) e
 	fmt.Println("ASDDASDASDa", lastName)
 
 	return b.repository.Update(id, firstName, lastName, email, phone)
+}
+
+func (b business) Count(filters Filters) (int, error) {
+	return b.repository.Count(filters)
 }
