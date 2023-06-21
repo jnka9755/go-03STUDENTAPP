@@ -37,7 +37,7 @@ type (
 		Status int         `json:"status"`
 		Data   interface{} `json:"data,omitempty"`
 		Err    string      `json:"error,omitempty"`
-		Meta   *meta.Meta  `json: "meta,omitempty"`
+		Meta   *meta.Meta  `json:"meta,omitempty"`
 	}
 )
 
