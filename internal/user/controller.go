@@ -3,6 +3,7 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/jnka9755/go-03STUDENTAPP/package/meta"
@@ -19,10 +20,10 @@ type (
 	}
 
 	CreateReq struct {
-		FirstName string `json: "first_name"`
-		LastName  string `json: "last_name"`
-		Email     string `json: "email"`
-		Phone     string `json: "phone"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		Email     string `json:"email"`
+		Phone     string `json:"phone"`
 	}
 
 	UpdateReq struct {
@@ -121,6 +122,9 @@ func makeGetAllEndpoint(b Business) Controller {
 			LastName:  value.Get("last_name"),
 		}
 
+		limit, _ := strconv.Atoi(value.Get("limit"))
+		page, _ := strconv.Atoi(value.Get("page"))
+
 		count, err := b.Count(filters)
 
 		if err != nil {
@@ -129,7 +133,7 @@ func makeGetAllEndpoint(b Business) Controller {
 			return
 		}
 
-		meta, err := meta.New(count)
+		meta, err := meta.New(page, limit, count)
 
 		if err != nil {
 			w.WriteHeader(500)
@@ -137,7 +141,7 @@ func makeGetAllEndpoint(b Business) Controller {
 			return
 		}
 
-		users, err := b.GetAll(filters)
+		users, err := b.GetAll(filters, meta.Offset(), meta.Limit())
 
 		if err != nil {
 			w.WriteHeader(400)

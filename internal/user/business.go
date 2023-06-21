@@ -13,7 +13,7 @@ type (
 
 	Business interface {
 		Create(user *User) (*User, error)
-		GetAll(filters Filters) ([]User, error)
+		GetAll(filters Filters, offset, limit int) ([]User, error)
 		Get(id string) (*User, error)
 		Delete(id string) error
 		Update(id string, firstName, lastName, email, phone *string) error
@@ -43,10 +43,10 @@ func (b business) Create(user *User) (*User, error) {
 	return user, nil
 }
 
-func (b business) GetAll(filters Filters) ([]User, error) {
+func (b business) GetAll(filters Filters, offset, limit int) ([]User, error) {
 
 	b.log.Println("GetAll user Bussiness")
-	users, err := b.repository.GetAll(filters)
+	users, err := b.repository.GetAll(filters, offset, limit)
 
 	if err != nil {
 		return nil, err
