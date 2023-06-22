@@ -1,28 +1,34 @@
 package user
 
 import (
-	"fmt"
 	"log"
 )
 
 type (
-	Filters struct {
-		FirstName string
-		LastName  string
-	}
-
 	Business interface {
-		Create(user *User) (*User, error)
+		Create(request *CreateReq) (*User, error)
 		GetAll(filters Filters, offset, limit int) ([]User, error)
 		Get(id string) (*User, error)
 		Delete(id string) error
-		Update(id string, firstName, lastName, email, phone *string) error
+		Update(id string, request *UpdateReq) error
 		Count(filters Filters) (int, error)
 	}
 
 	business struct {
 		log        *log.Logger
 		repository Repository
+	}
+
+	Filters struct {
+		FirstName string
+		LastName  string
+	}
+
+	UpdateUser struct {
+		FirstName *string
+		LastName  *string
+		Email     *string
+		Phone     *string
 	}
 )
 
@@ -33,19 +39,26 @@ func NewBusiness(log *log.Logger, repository Repository) Business {
 	}
 }
 
-func (b business) Create(user *User) (*User, error) {
+func (b business) Create(request *CreateReq) (*User, error) {
 
-	b.log.Println("Create user Bussiness")
-	if err := b.repository.Create(user); err != nil {
+	user := User{
+		FirstName: request.FirstName,
+		LastName:  request.LastName,
+		Email:     request.Email,
+		Phone:     request.Phone,
+	}
+
+	b.log.Println("Create user Business")
+	if err := b.repository.Create(&user); err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (b business) GetAll(filters Filters, offset, limit int) ([]User, error) {
 
-	b.log.Println("GetAll user Bussiness")
+	b.log.Println("GetAll user Business")
 	users, err := b.repository.GetAll(filters, offset, limit)
 
 	if err != nil {
@@ -57,7 +70,7 @@ func (b business) GetAll(filters Filters, offset, limit int) ([]User, error) {
 
 func (b business) Get(id string) (*User, error) {
 
-	b.log.Println("Get user Bussiness")
+	b.log.Println("Get user Business")
 	user, err := b.repository.Get(id)
 
 	if err != nil {
@@ -69,18 +82,22 @@ func (b business) Get(id string) (*User, error) {
 
 func (b business) Delete(id string) error {
 
-	b.log.Println("Delete user Bussiness")
+	b.log.Println("Delete user Business")
 	return b.repository.Delete(id)
 }
 
-func (b business) Update(id string, firstName, lastName, email, phone *string) error {
+func (b business) Update(id string, request *UpdateReq) error {
 
-	b.log.Println("Update user Bussiness")
+	b.log.Println("Update user Business")
 
-	fmt.Println("ASDDASDASDa", firstName)
-	fmt.Println("ASDDASDASDa", lastName)
+	user := UpdateUser{
+		FirstName: request.FirstName,
+		LastName:  request.LastName,
+		Email:     request.Email,
+		Phone:     request.Phone,
+	}
 
-	return b.repository.Update(id, firstName, lastName, email, phone)
+	return b.repository.Update(id, &user)
 }
 
 func (b business) Count(filters Filters) (int, error) {

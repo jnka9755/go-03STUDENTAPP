@@ -40,6 +40,10 @@ func main() {
 	courseController := course.MakeEndpoints(courseBussiness)
 
 	router.HandleFunc("/courses", courseController.Create).Methods("POST")
+	router.HandleFunc("/courses", courseController.GetAll).Methods("GET")
+	router.HandleFunc("/courses/{id}", courseController.Get).Methods("GET")
+	router.HandleFunc("/courses/{id}", courseController.Delete).Methods("DELETE")
+	router.HandleFunc("/courses/{id}", courseController.Update).Methods("PATCH")
 
 	server := http.Server{
 		Handler:      http.TimeoutHandler(router, time.Second*5, "Timeout!"),

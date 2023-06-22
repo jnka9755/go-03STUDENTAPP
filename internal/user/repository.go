@@ -13,7 +13,7 @@ type Repository interface {
 	GetAll(filters Filters, offset, limit int) ([]User, error)
 	Get(id string) (*User, error)
 	Delete(id string) error
-	Update(id string, firstName, lastName, email, phone *string) error
+	Update(id string, user *UpdateUser) error
 	Count(filters Filters) (int, error)
 }
 
@@ -74,7 +74,7 @@ func (r *repository) Get(id string) (*User, error) {
 
 func (r *repository) Delete(id string) error {
 
-	r.log.Println("Delete user Respository")
+	r.log.Println("Delete user Repository")
 	user := User{ID: id}
 
 	if err := r.db.Delete(&user).Error; err != nil {
@@ -86,29 +86,26 @@ func (r *repository) Delete(id string) error {
 	return nil
 }
 
-func (r *repository) Update(id string, firstName, lastName, email, phone *string) error {
+func (r *repository) Update(id string, user *UpdateUser) error {
 
-	r.log.Println("Udate user Respository")
-
-	fmt.Println("ASDDASDASDa", firstName)
-	fmt.Println("ASDDASDASDa", lastName)
+	r.log.Println("Udate user Repository")
 
 	values := make(map[string]interface{})
 
-	if firstName != nil {
-		values["first_name"] = *firstName
+	if user.FirstName != nil {
+		values["first_name"] = *user.FirstName
 	}
 
-	if lastName != nil {
-		values["last_name"] = *lastName
+	if user.LastName != nil {
+		values["last_name"] = *user.LastName
 	}
 
-	if email != nil {
-		values["email"] = *email
+	if user.Email != nil {
+		values["email"] = *user.Email
 	}
 
-	if phone != nil {
-		values["phone"] = *phone
+	if user.Phone != nil {
+		values["phone"] = *user.Phone
 	}
 
 	if err := r.db.Model(&User{}).Where("id = ?", id).Updates(values).Error; err != nil {
