@@ -2,13 +2,15 @@ package user
 
 import (
 	"log"
+
+	"github.com/jnka9755/go-03STUDENTAPP/internal/domain"
 )
 
 type (
 	Business interface {
-		Create(request *CreateReq) (*User, error)
-		GetAll(filters Filters, offset, limit int) ([]User, error)
-		Get(id string) (*User, error)
+		Create(request *CreateReq) (*domain.User, error)
+		GetAll(filters Filters, offset, limit int) ([]domain.User, error)
+		Get(id string) (*domain.User, error)
 		Delete(id string) error
 		Update(id string, request *UpdateReq) error
 		Count(filters Filters) (int, error)
@@ -39,9 +41,9 @@ func NewBusiness(log *log.Logger, repository Repository) Business {
 	}
 }
 
-func (b business) Create(request *CreateReq) (*User, error) {
+func (b business) Create(request *CreateReq) (*domain.User, error) {
 
-	user := User{
+	user := domain.User{
 		FirstName: request.FirstName,
 		LastName:  request.LastName,
 		Email:     request.Email,
@@ -56,7 +58,7 @@ func (b business) Create(request *CreateReq) (*User, error) {
 	return &user, nil
 }
 
-func (b business) GetAll(filters Filters, offset, limit int) ([]User, error) {
+func (b business) GetAll(filters Filters, offset, limit int) ([]domain.User, error) {
 
 	b.log.Println("GetAll user Business")
 	users, err := b.repository.GetAll(filters, offset, limit)
@@ -68,7 +70,7 @@ func (b business) GetAll(filters Filters, offset, limit int) ([]User, error) {
 	return users, nil
 }
 
-func (b business) Get(id string) (*User, error) {
+func (b business) Get(id string) (*domain.User, error) {
 
 	b.log.Println("Get user Business")
 	user, err := b.repository.Get(id)

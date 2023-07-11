@@ -3,13 +3,15 @@ package course
 import (
 	"log"
 	"time"
+
+	"github.com/jnka9755/go-03STUDENTAPP/internal/domain"
 )
 
 type (
 	Business interface {
-		Create(course *CreateReq) (*Course, error)
-		GetAll(filters Filters, offset, limit int) ([]Course, error)
-		Get(id string) (*Course, error)
+		Create(course *CreateReq) (*domain.Course, error)
+		GetAll(filters Filters, offset, limit int) ([]domain.Course, error)
+		Get(id string) (*domain.Course, error)
 		Delete(id string) error
 		Update(id string, course *UpdateReq) error
 		Count(filters Filters) (int, error)
@@ -38,7 +40,7 @@ func NewBusiness(log *log.Logger, repository Repository) Business {
 	}
 }
 
-func (b business) Create(request *CreateReq) (*Course, error) {
+func (b business) Create(request *CreateReq) (*domain.Course, error) {
 
 	var startDateParsed, endDateParsed time.Time
 
@@ -60,7 +62,7 @@ func (b business) Create(request *CreateReq) (*Course, error) {
 		endDateParsed = date
 	}
 
-	course := Course{
+	course := domain.Course{
 		Name:      request.Name,
 		StartDate: startDateParsed,
 		EndDate:   endDateParsed,
@@ -73,7 +75,7 @@ func (b business) Create(request *CreateReq) (*Course, error) {
 	return &course, nil
 }
 
-func (b business) GetAll(filters Filters, offset, limit int) ([]Course, error) {
+func (b business) GetAll(filters Filters, offset, limit int) ([]domain.Course, error) {
 
 	b.log.Println("GetAll course Business")
 	courses, err := b.repository.GetAll(filters, offset, limit)
@@ -85,7 +87,7 @@ func (b business) GetAll(filters Filters, offset, limit int) ([]Course, error) {
 	return courses, nil
 }
 
-func (b business) Get(id string) (*Course, error) {
+func (b business) Get(id string) (*domain.Course, error) {
 
 	b.log.Println("Get course Business")
 	course, err := b.repository.Get(id)

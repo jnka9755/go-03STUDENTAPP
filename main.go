@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jnka9755/go-03STUDENTAPP/internal/course"
+	"github.com/jnka9755/go-03STUDENTAPP/internal/registration"
 	"github.com/jnka9755/go-03STUDENTAPP/internal/user"
 	"github.com/jnka9755/go-03STUDENTAPP/package/boostrap"
 	"github.com/joho/godotenv"
@@ -36,14 +37,20 @@ func main() {
 	router.HandleFunc("/users/{id}", userController.Delete).Methods("DELETE")
 
 	courseRepository := course.NewRepository(log, db)
-	courseBussiness := course.NewBusiness(log, courseRepository)
-	courseController := course.MakeEndpoints(courseBussiness)
+	courseBusiness := course.NewBusiness(log, courseRepository)
+	courseController := course.MakeEndpoints(courseBusiness)
 
 	router.HandleFunc("/courses", courseController.Create).Methods("POST")
 	router.HandleFunc("/courses", courseController.GetAll).Methods("GET")
 	router.HandleFunc("/courses/{id}", courseController.Get).Methods("GET")
 	router.HandleFunc("/courses/{id}", courseController.Delete).Methods("DELETE")
 	router.HandleFunc("/courses/{id}", courseController.Update).Methods("PATCH")
+
+	registrationRepository := registration.NewRepository(log, db)
+	registrationBusiness := registration.NewBusiness(log, registrationRepository)
+	registrationController := registration.MakeEndpoints(registrationBusiness)
+
+	router.HandleFunc("/registration", registrationController.Create).Methods("POST")
 
 	server := http.Server{
 		Handler:      http.TimeoutHandler(router, time.Second*5, "Timeout!"),
