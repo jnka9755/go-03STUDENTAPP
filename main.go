@@ -47,7 +47,7 @@ func main() {
 	router.HandleFunc("/courses/{id}", courseController.Update).Methods("PATCH")
 
 	registrationRepository := registration.NewRepository(log, db)
-	registrationBusiness := registration.NewBusiness(log, registrationRepository)
+	registrationBusiness := registration.NewBusiness(log, userBusiness, courseBusiness, registrationRepository)
 	registrationController := registration.MakeEndpoints(registrationBusiness)
 
 	router.HandleFunc("/registration", registrationController.Create).Methods("POST")
